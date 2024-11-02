@@ -14,7 +14,7 @@ $$ f(w) = \| X w - y \|_2 $$
 
 ---
 
-**(A2)** is incremental QR, that is, a strategy in which you update the QR factorization after the addition of a new random feature column $$x_{n+1}$$to the feature matrix $$X$$. More formally, you are required to write a function that takes as an input the factors of an already-computed factorization $$X = QR$$ where $$Q$$ is stored either directly or via its Householder vectors, at your choice) of $$X \in \mathbb{R}^{m \times n}$$, and uses them to compute a factorization $$\hat{X} = \hat{Q} \hat{R}$$ of the matrix $$\hat{X} = [X | x_{n+1}] \in \mathbb{R}^{m \times (n+1)}$$, reusing the work already done. This update should have a cost lower than $$O(m n^2)$$.
+**(A2)** is incremental QR, that is, a strategy in which you update the QR factorization after the addition of a new random feature column $$x_{n+1}$$ to the feature matrix $$X$$. More formally, you are required to write a function that takes as an input the factors of an already-computed factorization $$X = QR$$ where $$Q$$ is stored either directly or via its Householder vectors, at your choice) of $$X \in \mathbb{R}^{m \times n}$$, and uses them to compute a factorization $$\hat{X} = \hat{Q} \hat{R}$$ of the matrix $$\hat{X} = [X | x_{n+1}] \in \mathbb{R}^{m \times (n+1)}$$, reusing the work already done. This update should have a cost lower than $$O(m n^2)$$.
 
 ---
 
