@@ -1,9 +1,4 @@
-# CM_Project
-Here's how you can format this text as Markdown for GitHub:
-
----
-
-# Project 19
+# ML Project 19
 
 **(M)** is so-called **extreme learning**, i.e., a neural network with one hidden layer, $$y = w\sigma(W_1 x)$$, where the weight matrix for the hidden layer $$W_1$$ is a fixed random matrix, $$\sigma(\cdot)$$ is an elementwise activation function of your choice, and the output weight vector $$w$$ is chosen by solving a $$L_2$$ minimization problem:
 
