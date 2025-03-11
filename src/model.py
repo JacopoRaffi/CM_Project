@@ -6,11 +6,11 @@ class ELM:
 
     Attributes:
     -----------
-    n_input: int
+    input_size: int
         Number of input neurons
-    n_hidden: int
+    hidden_size: int
         Number of hidden neurons
-    n_output: int
+    output_size: int
         Number of output neurons
     activation: callable
         Activation function for hidden layer
@@ -19,12 +19,12 @@ class ELM:
     w: np.ndarray
         Output weights
     '''
-    def __init__(self, n_input:int, n_hidden:int, n_output:int=1, 
+    def __init__(self, input_size:int, hidden_size:int, output_size:int=1, 
                  init_method:str='uniform', init_params:tuple=(-1, 1), hidden_activation:callable=np.tanh):
         
-        self.n_input = n_input
-        self.n_hidden = n_hidden
-        self.n_output = n_output
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.output_size = output_size
         self.activation = hidden_activation
 
         self.hidden_weights = self.__init_weights(init_method, init_params) # hidden layer weights
@@ -71,8 +71,8 @@ class ELM:
         '''
 
         if init_method == 'uniform':
-            return np.random.uniform(init_params[0], init_params[1], (self.n_hidden, self.n_input))
+            return np.random.uniform(init_params[0], init_params[1], (self.hidden_size, self.input_size))
         elif init_method == 'normal':
-            return np.random.normal(init_params[0], init_params[1], (self.n_hidden, self.n_input))
+            return np.random.normal(init_params[0], init_params[1], (self.hidden_size, self.input_size))
         else:
             raise ValueError('Invalid initialization method')
