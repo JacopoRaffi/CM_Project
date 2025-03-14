@@ -18,6 +18,9 @@ def thin_QR(X:np.ndarray) -> tuple:
     m, n = X.shape
     R = X.copy().astype(float)
     householder_vectors = []
+
+    #TODO: add threshold for numerical stability
+    #TODO: test right 
     
     for j in range(n):
         # Select column below diagonal
@@ -38,58 +41,24 @@ def thin_QR(X:np.ndarray) -> tuple:
     return householder_vectors, R[:n, :n]
 
 
-def forwad_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
+
+def apply_householders(householder_vectors:list, A:np.ndarray) -> np.ndarray:
     '''
-    Forward substitution for solving a lower triangular system of equations Ax=b
+    Perform the product Q*A using Householder vectors instead of the full Q matrix
 
     Parameters:
     -----------
+    householder_vectors: np.ndarray
+        Householder vectors
     A: np.ndarray
-        Lower triangular matrix
-    b: np.ndarray
-        Right-hand side vector
-    
+        Matrix to be transformed
+
     Returns:
     --------
     np.ndarray
-        Solution vector
+        Transformed matrix
     '''
-    pass
-
-def backward_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
-    '''
-    Backward substitution for solving an upper triangular system of equations Ax=b
-
-    Parameters:
-    -----------
-    A: np.ndarray
-        Upper triangular matrix
-    b: np.ndarray
-        Right-hand side vector
     
-    Returns:
-    --------
-    np.ndarray
-        Solution vector
-    '''
-    pass
-
-def incr_QR(X_new:np.ndarray, householders:list, R:np.ndarray) -> tuple:
-    '''
-    Incremental QR decomposition of matrix X
-
-    Parameters:
-    -----------
-    X_new: np.ndarray
-        Input matrix
-    householder: list
-        Householder vectors from the previous QR factorization of X
-    R_0: np.ndarray
-        R matrix from the previous QR factorization of X
-
-    Returns:
-    --------
-    tuple
-        new Householder vectors and R matrix (only the upper triangular part)
-    '''
-    pass
+    for u in reversed(householder_vectors):
+        A -= 2 * np.outer(u, u.T @ A)
+    return A
