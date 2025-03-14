@@ -52,7 +52,7 @@ def backward_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
     '''
     pass
 
-def incr_QR(X_new:np.ndarray, householder:list, R:np.ndarray) -> tuple:
+def incr_QR(X_new:np.ndarray, householders:list, R:np.ndarray) -> tuple:
     '''
     Incremental QR decomposition of matrix X
 
