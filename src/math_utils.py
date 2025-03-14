@@ -104,6 +104,22 @@ def incr_QR(x_new:np.ndarray, householder_vectors:list, R:np.ndarray) -> tuple:
     Returns:
     --------
     tuple
-        new Householder vectors and R matrix (only the upper triangular part)
+        The new Householder vector and R matrix (only the upper triangular part)
     '''
-    pass
+    
+    m, n = x_new.shape[0], len(householder_vectors)
+
+    z = apply_householders(householder_vectors, x_new)
+    z_0, z_1 = z[:n], z[n:]
+
+    # Compute the new Householder vector
+    norm_z = np.linalg.norm(z)
+    u_new = z.copy()
+    u_new[0] += np.sign(z[0]) * norm_z
+    u_new /= np.linalg.norm(u_new)
+
+    #TODO: form the new matrix R and consider only the upper triangular part (n+1 x n+1)
+    # H_new * z_1 = z_1 - 2*np.outer(u_new, u_new.T @ z_1)
+
+
+    return householder_vectors + [u_new], 
