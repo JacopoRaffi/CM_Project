@@ -32,7 +32,16 @@ def forwad_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
     np.ndarray
         Solution vector
     '''
-    pass
+
+    w = np.zeros(b.shape)
+
+    for i in range(len(b)):
+        if A[i,i] == 0: #TODO: come risolvere?
+            raise ValueError("The diagonal element is zero")
+        
+        w[i] = (b[i] - np.dot(A[i, :i], w[:i])) / A[i, i]
+
+    return w
 
 def backward_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
     '''
@@ -50,16 +59,43 @@ def backward_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
     np.ndarray
         Solution vector
     '''
+    
+    w = np.zeros(b.shape)
+
+    for i in range(len(b)-1, -1, -1):
+        if A[i,i] == 0: #TODO: come risolvere?
+            raise ValueError("The diagonal element is zero")
+        
+        w[i] = (b[i] - np.dot(A[i, i+1:], w[i+1:])) / A[i, i]
+    
+    return w
+
+def apply_householders(householder_vectors:list, v:np.ndarray) -> np.ndarray:
+    '''
+    Perform the product Q*v using Householder vectors instead of the full Q matrix
+
+    Parameters:
+    -----------
+    householder_vectors: np.ndarray
+        Householder vectors
+    v: np.ndarray
+        Vector to be transformed
+
+    Returns:
+    --------
+    np.ndarray
+        Transformed vector
+    '''
     pass
 
-def incr_QR(X_new:np.ndarray, householders:list, R:np.ndarray) -> tuple:
+def incr_QR(x_new:np.ndarray, householder_vectors:list, R:np.ndarray) -> tuple:
     '''
     Incremental QR decomposition of matrix X
 
     Parameters:
     -----------
-    X_new: np.ndarray
-        Input matrix
+    x_new: np.ndarray
+        The new feature colunmn added to the original matrix
     householder: list
         Householder vectors from the previous QR factorization of X
     R_0: np.ndarray
