@@ -59,6 +59,8 @@ def apply_householders(householder_vectors:list, A:np.ndarray) -> np.ndarray:
         Transformed matrix
     '''
     
-    for u in reversed(householder_vectors):
-        A -= 2 * np.outer(u, u.T @ A)
+    for i, u in enumerate(householder_vectors):
+        # Restrict the operation to the active submatrix A[i:, i:]
+        A[i:, i:] -= 2 * np.outer(u, u.T @ A[i:, i:]) # oppure solo A[i:, ]
+    
     return A
