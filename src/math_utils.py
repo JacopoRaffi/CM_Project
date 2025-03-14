@@ -70,13 +70,13 @@ def backward_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
     
     return w
 
-def apply_householders(householders:list, v:np.ndarray) -> np.ndarray:
+def apply_householders(householder_vectors:list, v:np.ndarray) -> np.ndarray:
     '''
     Perform the product Q*v using Householder vectors instead of the full Q matrix
 
     Parameters:
     -----------
-    householders: np.ndarray
+    householder_vectors: np.ndarray
         Householder vectors
     v: np.ndarray
         Vector to be transformed
@@ -88,7 +88,7 @@ def apply_householders(householders:list, v:np.ndarray) -> np.ndarray:
     '''
     pass
 
-def incr_QR(x_new:np.ndarray, householders:list, R:np.ndarray) -> tuple:
+def incr_QR(x_new:np.ndarray, householder_vectors:list, R:np.ndarray) -> tuple:
     '''
     Incremental QR decomposition of matrix X
 
