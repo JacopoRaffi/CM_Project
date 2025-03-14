@@ -16,10 +16,40 @@ def thin_QR(X:np.ndarray) -> tuple:
     '''
     pass
 
-def forwad_substitution():
+def forwad_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
+    '''
+    Forward substitution for solving a lower triangular system of equations Ax=b
+
+    Parameters:
+    -----------
+    A: np.ndarray
+        Lower triangular matrix
+    b: np.ndarray
+        Right-hand side vector
+    
+    Returns:
+    --------
+    np.ndarray
+        Solution vector
+    '''
     pass
 
-def backward_substitution():
+def backward_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
+    '''
+    Backward substitution for solving an upper triangular system of equations Ax=b
+
+    Parameters:
+    -----------
+    A: np.ndarray
+        Upper triangular matrix
+    b: np.ndarray
+        Right-hand side vector
+    
+    Returns:
+    --------
+    np.ndarray
+        Solution vector
+    '''
     pass
 
 def incr_QR(X_new:np.ndarray, householder:list, R:np.ndarray) -> tuple:
