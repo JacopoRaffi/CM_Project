@@ -42,7 +42,7 @@ def thin_QR(X:np.ndarray) -> tuple:
 
 
 
-def apply_householders(householder_vectors:list, A:np.ndarray) -> np.ndarray:
+def apply_householders_matrix(householder_vectors:list, A:np.ndarray) -> np.ndarray:
     '''
     Perform the product Q*A using Householder vectors instead of the full Q matrix
 
@@ -58,9 +58,37 @@ def apply_householders(householder_vectors:list, A:np.ndarray) -> np.ndarray:
     np.ndarray
         Transformed matrix
     '''
-    
+
+
     for i, u in reversed(list(enumerate(householder_vectors))):
         # Restrict the operation to the active submatrix A[i:, i:]
         A[i:, i:] -= 2 * np.outer(u, u.T @ A[i:, i:])
     
     return A
+
+
+def apply_householders_vector(householder_vectors:list, b:np.ndarray, reverse:bool=False) -> np.ndarray:
+    '''
+    Perform the product Q*b using Householder vectors instead of the full Q matrix
+
+    Parameters:
+    -----------
+    householder_vectors: np.ndarray
+        Householder vectors
+    b: np.ndarray
+        Vector to be transformed
+
+    Returns:
+    --------
+    np.ndarray
+        Transformed vector
+    '''
+
+    if reverse:
+        for i, u in reversed(list(enumerate(householder_vectors))):
+            b[i:] -= 2 * np.outer(u, u.T @ b[i:])
+    else:
+        for i, u in enumerate(householder_vectors):
+            b[i:] -= 2 * np.outer(u, u.T @ b[i:])
+
+    return b
