@@ -38,7 +38,7 @@ def thin_QR(X:np.ndarray) -> tuple:
         # Store Householder vector
         householder_vectors.append(u)
     
-    return householder_vectors, R[:n, :n]
+    return householder_vectors, R
 
 
 
@@ -59,8 +59,8 @@ def apply_householders(householder_vectors:list, A:np.ndarray) -> np.ndarray:
         Transformed matrix
     '''
     
-    for i, u in enumerate(householder_vectors):
+    for i, u in reversed(list(enumerate(householder_vectors))):
         # Restrict the operation to the active submatrix A[i:, i:]
-        A[i:, i:] -= 2 * np.outer(u, u.T @ A[i:, i:]) # oppure solo A[i:, ]
+        A[i:, i:] -= 2 * np.outer(u, u.T @ A[i:, i:])
     
     return A
