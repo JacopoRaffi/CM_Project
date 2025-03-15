@@ -14,7 +14,89 @@ def thin_QR(X:np.ndarray) -> tuple:
     tuple
         Householder vectors and R matrix (only the upper triangular part)
     '''
-    pass
+    
+    m, n = X.shape
+    R = X.copy() # avoid to modify the original matrix
+    householder_vectors = []
+
+    #TODO: add threshold for numerical stability
+    #TODO: test right 
+    
+    for j in range(n):
+        # Select column below diagonal
+        x = R[j:, j]
+        
+        # Compute Householder vector
+        norm_x = np.linalg.norm(x)
+        u = x.copy()
+        u[0] += np.sign(x[0]) * norm_x
+        u /= np.linalg.norm(u)
+        
+        # Apply Householder transformation
+        R[j:, :] -= 2 * np.outer(u, u.T @ R[j:, :])
+        
+        # Store Householder vector
+        householder_vectors.append(u)
+    
+    return householder_vectors, R
+
+
+
+def apply_householders_matrix(householder_vectors:list, A:np.ndarray) -> np.ndarray:
+    '''
+    Perform the product Q*A using Householder vectors instead of the full Q matrix
+
+    Parameters:
+    -----------
+    householder_vectors: np.ndarray
+        Householder vectors
+    A: np.ndarray
+        Matrix to be transformed
+
+    Returns:
+    --------
+    np.ndarray
+        Transformed matrix
+    '''
+
+    X = A.copy() # avoid to modify the original matrix
+
+    for i, u in reversed(list(enumerate(householder_vectors))):
+        # Restrict the operation to the active submatrix A[i:, i:]
+        X[i:, i:] -= 2 * np.outer(u, u.T @ X[i:, i:])
+    
+    return X
+
+
+def apply_householders_vector(householder_vectors:list, b:np.ndarray, reverse:bool=False) -> np.ndarray:
+    '''
+    Perform the product Q*b using Householder vectors instead of the full Q matrix
+
+    Parameters:
+    -----------
+    householder_vectors: np.ndarray
+        Householder vectors
+    b: np.ndarray
+        Vector to be transformed
+    reverse: bool
+        If True, apply the transformation in reverse order (represent Q^T)
+
+    Returns:
+    --------
+    np.ndarray
+        Transformed vector
+    '''
+
+    y = b.copy() # avoid to modify the original vector
+
+    if reverse:
+        for i, u in reversed(list(enumerate(householder_vectors))):
+            y[i:] -= 2 * np.outer(u, u.T @ y[i:])
+    else:
+        for i, u in enumerate(householder_vectors):
+            y[i:] -= 2 * np.outer(u, u.T @ y[i:])
+
+    return y
 
 def forwad_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
     '''
@@ -70,24 +152,6 @@ def backward_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
     
     return w
 
-def apply_householders(householder_vectors:list, v:np.ndarray) -> np.ndarray:
-    '''
-    Perform the product Q*v using Householder vectors instead of the full Q matrix
-
-    Parameters:
-    -----------
-    householder_vectors: np.ndarray
-        Householder vectors
-    v: np.ndarray
-        Vector to be transformed
-
-    Returns:
-    --------
-    np.ndarray
-        Transformed vector
-    '''
-    pass
-
 def incr_QR(x_new:np.ndarray, householder_vectors:list, R:np.ndarray) -> tuple:
     '''
     Incremental QR decomposition of matrix X
@@ -109,7 +173,7 @@ def incr_QR(x_new:np.ndarray, householder_vectors:list, R:np.ndarray) -> tuple:
     
     m, n = x_new.shape[0], len(householder_vectors)
 
-    z = apply_householders(householder_vectors, x_new)
+    z = apply_householders_vector(householder_vectors, x_new)
     z_0, z_1 = z[:n], z[n:]
 
     # Compute the new Householder vector

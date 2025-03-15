@@ -16,7 +16,7 @@ def thin_QR(X:np.ndarray) -> tuple:
     '''
     
     m, n = X.shape
-    R = X.copy().astype(float)
+    R = X.copy() # avoid to modify the original matrix
     householder_vectors = []
 
     #TODO: add threshold for numerical stability
@@ -59,12 +59,13 @@ def apply_householders_matrix(householder_vectors:list, A:np.ndarray) -> np.ndar
         Transformed matrix
     '''
 
+    X = A.copy() # avoid to modify the original matrix
 
     for i, u in reversed(list(enumerate(householder_vectors))):
         # Restrict the operation to the active submatrix A[i:, i:]
-        A[i:, i:] -= 2 * np.outer(u, u.T @ A[i:, i:])
+        X[i:, i:] -= 2 * np.outer(u, u.T @ X[i:, i:])
     
-    return A
+    return X
 
 
 def apply_householders_vector(householder_vectors:list, b:np.ndarray, reverse:bool=False) -> np.ndarray:
@@ -77,6 +78,8 @@ def apply_householders_vector(householder_vectors:list, b:np.ndarray, reverse:bo
         Householder vectors
     b: np.ndarray
         Vector to be transformed
+    reverse: bool
+        If True, apply the transformation in reverse order (represent Q^T)
 
     Returns:
     --------
@@ -84,11 +87,13 @@ def apply_householders_vector(householder_vectors:list, b:np.ndarray, reverse:bo
         Transformed vector
     '''
 
+    y = b.copy() # avoid to modify the original vector
+
     if reverse:
         for i, u in reversed(list(enumerate(householder_vectors))):
-            b[i:] -= 2 * np.outer(u, u.T @ b[i:])
+            y[i:] -= 2 * np.outer(u, u.T @ y[i:])
     else:
         for i, u in enumerate(householder_vectors):
-            b[i:] -= 2 * np.outer(u, u.T @ b[i:])
+            y[i:] -= 2 * np.outer(u, u.T @ y[i:])
 
-    return b
+    return y
