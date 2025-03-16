@@ -38,7 +38,7 @@ def thin_QR(X:np.ndarray) -> tuple:
         # Store Householder vector
         householder_vectors.append(u)
     
-    return householder_vectors, R
+    return householder_vectors, R[:n, :]
 
 
 
@@ -89,10 +89,10 @@ def apply_householders_vector(householder_vectors:list, b:np.ndarray, reverse:bo
 
     y = b.copy() # avoid to modify the original vector
 
-    if reverse:
+    if reverse: # represent Q^T
         for i, u in reversed(list(enumerate(householder_vectors))):
             y[i:] -= 2 * np.outer(u, u.T @ y[i:])
-    else:
+    else: # represent Q
         for i, u in enumerate(householder_vectors):
             y[i:] -= 2 * np.outer(u, u.T @ y[i:])
 
@@ -121,7 +121,7 @@ def forwad_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
         if A[i,i] == 0: #TODO: come risolvere?
             raise ValueError("The diagonal element is zero")
         
-        w[i] = (b[i] - np.dot(A[i, :i], w[:i])) / A[i, i] #TODO: controlla stabilitá numerica (se A[i,i] é vicino a 0 trova soluzione)
+        w[i] = (b[i] - np.dot(A[i, :i], w[:i])) / A[i, i] #TODO: controlla stabilitá numerica (se A[i,i] è vicino a 0 trova soluzione)
 
     return w
 
@@ -148,7 +148,7 @@ def backward_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
         if A[i,i] == 0: #TODO: come risolvere?
             raise ValueError("The diagonal element is zero")
         
-        w[i] = (b[i] - np.dot(A[i, i+1:], w[i+1:])) / A[i, i] #TODO: controlla stabilitá numerica (se A[i,i] é vicino a 0 trova soluzione)
+        w[i] = (b[i] - np.dot(A[i, i+1:], w[i+1:])) / A[i, i] #TODO: controlla stabilitá numerica (se A[i,i] è vicino a 0 trova soluzione)
     
     return w
 
@@ -173,17 +173,17 @@ def incr_QR(x_new:np.ndarray, householder_vectors:list, R:np.ndarray) -> tuple:
     
     m, n = x_new.shape[0], len(householder_vectors)
 
-    z = apply_householders_vector(householder_vectors, x_new)
-    z_0, z_1 = z[:n], z[n:]
+    z = apply_householders_vector(householder_vectors, x_new, reverse=True)
+    z0, z1 = z[:n], z[n:]
 
     # Compute the new Householder vector
-    norm_z = np.linalg.norm(z)
-    u_new = z.copy()
-    u_new[0] += np.sign(z[0]) * norm_z
+    norm_z1 = np.linalg.norm(z1)
+    u_new = z1.copy()
+    u_new[0] += np.sign(z1[0]) * norm_z1
     u_new /= np.linalg.norm(u_new)
 
-    #TODO: form the new matrix R and consider only the upper triangular part (n+1 x n+1)
-    # H_new * z_1 = z_1 - 2*np.outer(u_new, u_new.T @ z_1)
+    print(u_new.shape, z1.shape)
 
+    transformed_z1 = z1 - 2*np.outer(u_new, u_new.T @ z1)
 
-    return householder_vectors + [u_new], 
+    return householder_vectors + [u_new], np.triu(np.block([[R, z0], [np.zeros((m-n, n)), transformed_z1]]))[:n+1, :]
