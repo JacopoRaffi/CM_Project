@@ -121,7 +121,7 @@ def forwad_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
         if A[i,i] == 0: #TODO: come risolvere?
             raise ValueError("The diagonal element is zero")
         
-        w[i] = (b[i] - np.dot(A[i, :i], w[:i])) / A[i, i] #TODO: controlla stabilitá numerica (se A[i,i] è vicino a 0 trova soluzione)
+        w[i] = (b[i] - np.dot(A[i, :i], w[:i])) / A[i, i] #TODO: controlla stabilità numerica (se A[i,i] è vicino a 0 trova soluzione)
 
     return w
 
@@ -148,7 +148,7 @@ def backward_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
         if A[i,i] == 0: #TODO: come risolvere?
             raise ValueError("The diagonal element is zero")
         
-        w[i] = (b[i] - np.dot(A[i, i+1:], w[i+1:])) / A[i, i] #TODO: controlla stabilitá numerica (se A[i,i] è vicino a 0 trova soluzione)
+        w[i] = (b[i] - np.dot(A[i, i+1:], w[i+1:])) / A[i, i] #TODO: controlla stabilità numerica (se A[i,i] è vicino a 0 trova soluzione)
     
     return w
 
@@ -180,8 +180,8 @@ def incr_QR(x_new:np.ndarray, householder_vectors:list, R:np.ndarray) -> tuple:
     norm_z1 = np.linalg.norm(z1)
     u_new = z1.copy()
     u_new[0] += np.sign(z1[0]) * norm_z1
-    u_new /= np.linalg.norm(u_new)
+    u_new /= np.linalg.norm(u_new) #TODO: controlla stabilità numerica (se A[i,i] è vicino a 0 trova soluzione)
 
-    transformed_z1 = z1 - 2*np.outer(u_new, u_new.T @ z1)
+    z1 -= - 2*np.outer(u_new, u_new.T @ z1)
 
-    return householder_vectors + [u_new], np.triu(np.block([[R, z0], [np.zeros((m-n, n)), transformed_z1]]))[:n+1, :]
+    return householder_vectors + [u_new], np.block([[R, z0], [np.zeros((m-n, n)), z1]])[:n+1, :]
