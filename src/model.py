@@ -50,11 +50,17 @@ class ELM:
         X = self.activation(D @ self.hidden_weights.T) # hidden layer output 
         m, n = X.shape
 
-        if m >= n:
+        if m >= n: # X tall and thin
             h_vectors, R = thin_QR(X)
             b = apply_householders_vector(h_vectors, y, reverse=False)
 
             self.w = backward_substitution(R, b[:n])
+        else: # X short and wide
+            h_vectors, R = thin_QR(X.T)
+            z = forwad_substitution(R.T, y)
+            #z = np.vstack((z, np.zeros((n - m, 1))))
+
+            self.w = apply_householders_vector(h_vectors, z[:m], reverse=True)
 
     def predict(self, D):
         '''
