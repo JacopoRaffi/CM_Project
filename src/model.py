@@ -82,6 +82,22 @@ class ELM:
         
         return self.w.T @ self.activation(D @ self.hidden_weights.T).T
 
+    def add_neuron(self, new_input_feature:np.ndarray):
+        '''
+        Add a neuron to the hidden layer
+
+        Parameters:
+        -----------
+        new_input_feature: np.ndarray
+            New input feature
+        
+        Returns:
+        --------
+        None
+        '''
+
+        pass
+
     def __init_weights(self, init_method:str='uniform', init_params:tuple=(-1, 1)):
         '''
         Initialize weights for hidden layer
