@@ -168,7 +168,7 @@ def incr_QR(x_new:np.ndarray, householder_vectors:list, R:np.ndarray) -> tuple:
     Returns:
     --------
     tuple
-        The new Householder vector and R matrix (only the upper triangular part)
+        The updated list of Householder vectors and the new R matrix (only the upper triangular part)
     '''
     
     m, n = x_new.shape[0], len(householder_vectors)
@@ -181,8 +181,6 @@ def incr_QR(x_new:np.ndarray, householder_vectors:list, R:np.ndarray) -> tuple:
     u_new = z1.copy()
     u_new[0] += np.sign(z1[0]) * norm_z1
     u_new /= np.linalg.norm(u_new)
-
-    print(u_new.shape, z1.shape)
 
     transformed_z1 = z1 - 2*np.outer(u_new, u_new.T @ z1)
 
