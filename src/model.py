@@ -1,4 +1,5 @@
 import numpy as np
+from math_utils import *
 
 class ELM:
     '''
@@ -29,11 +30,33 @@ class ELM:
 
         self.hidden_weights = self.__init_weights(init_method, init_params) # hidden layer weights
         self.w = None # output weights
-        
-    def fit(self, X, y):
-        pass
 
-    def predict(self, X):
+    def fit(self, D, y):
+        '''
+        Train the model
+
+        Parameters:
+        -----------
+        D: np.ndarray
+            Input dataset
+        y: np.ndarray
+            labels
+        
+        Returns:
+        --------
+        None
+        '''
+        
+        X = self.activation(D @ self.hidden_weights.T) # hidden layer output 
+        m, n = X.shape
+
+        if m >= n:
+            h_vectors, R = thin_QR(X)
+            b = apply_householders_vector(h_vectors, y, reverse=False)
+
+            self.w = backward_substitution(R, b[:n])
+
+    def predict(self, D):
         '''
         Predict output for given input
 
@@ -51,7 +74,7 @@ class ELM:
         if self.w is None:
             raise RuntimeError('model is not trained yet')
         
-        return self.w @ self.activation(self.hidden_weights @ X.T)
+        return self.w.T @ self.activation(D @ self.hidden_weights.T).T
 
     def __init_weights(self, init_method:str='uniform', init_params:tuple=(-1, 1)):
         '''
