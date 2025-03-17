@@ -79,7 +79,8 @@ def apply_householders_vector(householder_vectors:list, b:np.ndarray, reverse:bo
     b: np.ndarray
         Vector to be transformed
     reverse: bool
-        If True, apply the transformation in reverse order (represent Q^T)
+        If True, apply the transformation in reverse order (represent Q)
+        if False, apply the transformation in forward order (represent Q^T)
 
     Returns:
     --------
@@ -89,10 +90,10 @@ def apply_householders_vector(householder_vectors:list, b:np.ndarray, reverse:bo
 
     y = b.copy() # avoid to modify the original vector
 
-    if reverse: # represent Q^T
+    if reverse: # represent Q
         for i, u in reversed(list(enumerate(householder_vectors))):
             y[i:] -= 2 * np.outer(u, u.T @ y[i:])
-    else: # represent Q
+    else: # represent Q^T
         for i, u in enumerate(householder_vectors):
             y[i:] -= 2 * np.outer(u, u.T @ y[i:])
 
@@ -173,15 +174,15 @@ def incr_QR(x_new:np.ndarray, householder_vectors:list, R:np.ndarray) -> tuple:
     
     m, n = x_new.shape[0], len(householder_vectors)
 
-    z = apply_householders_vector(householder_vectors, x_new, reverse=True)
+    z = apply_householders_vector(householder_vectors, x_new, reverse=False)
     z0, z1 = z[:n], z[n:]
 
     # Compute the new Householder vector
-    norm_z1 = np.linalg.norm(z1)
+    norm_z1 = np.linalg.norm(z1) 
     u_new = z1.copy()
     u_new[0] += np.sign(z1[0]) * norm_z1
     u_new /= np.linalg.norm(u_new) #TODO: controlla stabilità numerica (se A[i,i] è vicino a 0 trova soluzione)
-
-    z1 -= - 2*np.outer(u_new, u_new.T @ z1)
+    
+    z1 -= 2*np.outer(u_new, u_new.T @ z1)
 
     return householder_vectors + [u_new], np.block([[R, z0], [np.zeros((m-n, n)), z1]])[:n+1, :]
