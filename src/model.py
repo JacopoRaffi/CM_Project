@@ -27,8 +27,10 @@ class ELM:
         self.hidden_size = hidden_size
         self.output_size = output_size
         self.activation = hidden_activation
+        self.init_params = init_params
+        self.init_method = init_method
 
-        self.hidden_weights = self.__init_weights(init_method, init_params) # hidden layer weights
+        self.hidden_weights = self.__init_weights(init_method, init_params, hidden_size, input_size) # hidden layer weights
         self.w = None # output weights
 
     def fit(self, D, y):
@@ -54,7 +56,7 @@ class ELM:
             h_vectors, R = thin_QR(X)
             b = apply_householders_vector(h_vectors, y, reverse=False)
 
-            self.w = backward_substitution(R, b[:n])
+            self.w = np.squeeze(backward_substitution(R, b[:n]))
         else: # X short and wide
             h_vectors, R = thin_QR(X.T)
             z = forwad_substitution(R.T, y)
@@ -80,7 +82,7 @@ class ELM:
         if self.w is None:
             raise RuntimeError('model is not trained yet')
         
-        return self.w.T @ self.activation(D @ self.hidden_weights.T).T
+        return self.w @ self.activation(D @ self.hidden_weights.T).T
 
     def add_neuron(self, new_input_feature:np.ndarray):
         '''
@@ -96,9 +98,11 @@ class ELM:
         None
         '''
 
-        pass
+        # new random neuron
+        neuron_weights = self.__init_weights(init_method=self.init_method, init_params=self.init_params, rows=1, cols=self.input_size)
 
-    def __init_weights(self, init_method:str='uniform', init_params:tuple=(-1, 1)):
+
+    def __init_weights(self, init_method:str='uniform', init_params:tuple=(-1, 1), rows:int=None, cols:int=None):
         '''
         Initialize weights for hidden layer
 
@@ -116,8 +120,8 @@ class ELM:
         '''
 
         if init_method == 'uniform':
-            return np.random.uniform(init_params[0], init_params[1], (self.hidden_size, self.input_size))
+            return np.random.uniform(init_params[0], init_params[1], (rows, cols))
         elif init_method == 'normal':
-            return np.random.normal(init_params[0], init_params[1], (self.hidden_size, self.input_size))
+            return np.random.normal(init_params[0], init_params[1], (rows, cols))
         else:
             raise ValueError('Invalid initialization method')
