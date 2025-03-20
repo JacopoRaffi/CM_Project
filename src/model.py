@@ -19,6 +19,16 @@ class ELM:
         Hidden layer weights
     w: np.ndarray
         Output weights
+    init_params: tuple
+        Parameters for initialization method
+    init_method: str
+        Initialization method for hidden layer weights
+    R: np.ndarray
+        R matrix for QR factorization
+    h_vectors: np.ndarray
+        Householder vectors for QR factorization
+    X: np.ndarray
+        Hidden layer output
     '''
     def __init__(self, input_size:int, hidden_size:int, output_size:int=1, 
                  init_method:str='uniform', init_params:tuple=(-1, 1), hidden_activation:callable=np.tanh):
