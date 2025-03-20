@@ -19,8 +19,6 @@ def thin_QR(X:np.ndarray, threshold:np.float64=None) -> tuple:
     R = X.copy() # avoid to modify the original matrix
     householder_vectors = []
 
-    #TODO: test right 
-
     if threshold is None:
         threshold = np.finfo(np.float64).eps * np.max(np.abs(X))
     
@@ -37,6 +35,7 @@ def thin_QR(X:np.ndarray, threshold:np.float64=None) -> tuple:
         if np.max(np.abs(u)) > threshold:
             u /= np.linalg.norm(u)
         else:
+            print('Warning: The Householder vector is zero')
             u = np.zeros(u.shape)
         
         # Apply Householder transformation
@@ -46,8 +45,6 @@ def thin_QR(X:np.ndarray, threshold:np.float64=None) -> tuple:
         householder_vectors.append(u)
     
     return householder_vectors, R[:n, :]
-
-
 
 def apply_householders_matrix(householder_vectors:list, A:np.ndarray) -> np.ndarray:
     '''
@@ -106,7 +103,7 @@ def apply_householders_vector(householder_vectors:list, b:np.ndarray, reverse:bo
 
     return y
 
-def forwad_substitution(A:np.ndarray, b:np.ndarray, threshold:np.float64) -> np.ndarray:
+def forwad_substitution(A:np.ndarray, b:np.ndarray, threshold:np.float64=None) -> np.ndarray:
     '''
     Forward substitution for solving a lower triangular system of equations Ax=b
 
@@ -139,7 +136,7 @@ def forwad_substitution(A:np.ndarray, b:np.ndarray, threshold:np.float64) -> np.
 
     return w
 
-def backward_substitution(A:np.ndarray, b:np.ndarray, threshold:np.float64) -> np.ndarray:
+def backward_substitution(A:np.ndarray, b:np.ndarray, threshold:np.float64=None) -> np.ndarray:
     '''
     Backward substitution for solving an upper triangular system of equations Ax=b
 
@@ -207,6 +204,7 @@ def incr_QR(x_new:np.ndarray, householder_vectors:list, R:np.ndarray, threshold:
     if np.max(np.abs(u_new)) > threshold:
         u_new /= np.linalg.norm(u_new)
     else:
+        print('Warning: The new Householder vector is zero')
         u_new = np.zeros(u_new.shape)
     
     z1 -= 2*np.outer(u_new, u_new.T @ z1)
