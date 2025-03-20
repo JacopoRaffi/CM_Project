@@ -78,7 +78,7 @@ class ELM:
         
         return self.w @ self.activation(D @ self.hidden_weights.T).T
 
-    def add_neuron(self, new_input_feature:np.ndarray, y:np.ndarray=None, save_state:bool=False):
+    def add_neuron(self, new_input_feature:np.ndarray, y:np.ndarray=None):
         '''
         Add a neuron to the hidden layer
 
@@ -110,7 +110,25 @@ class ELM:
         self.h_vectors, self.R = incr_QR(x_new, self.h_vectors, self.R)
 
         if y is not None: # refit the model
-            self.__solve_lstsq(self.X, y, save_state)
+            self.__solve_lstsq(self.X, y, save_state=True)
+
+    
+    def clean_state(self):
+        '''
+        Clean the state of the model, i.e. set R, h_vectors and X to None so to avoid useless memory usage during inference
+
+        Parameters:
+        -----------
+        None
+        
+        Returns:
+        --------
+        None
+        '''
+
+        self.R = None
+        self.h_vectors = None
+        self.X = None
 
 
     def __init_weights(self, init_method:str='uniform', init_params:tuple=(-1, 1), rows:int=None, cols:int=None):
