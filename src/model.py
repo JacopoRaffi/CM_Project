@@ -55,24 +55,8 @@ class ELM:
         '''
         
         X = self.activation(D @ self.hidden_weights.T) # hidden layer output 
-        m, n = X.shape
-
-        if m >= n: # X tall and thin
-            h_vectors, R = thin_QR(X)
-            b = apply_householders_vector(h_vectors, y, reverse=False)
-
-            self.w = np.squeeze(backward_substitution(R, b[:n]))
-        else: # X short and wide
-            h_vectors, R = thin_QR(X.T)
-            z = forwad_substitution(R.T, y)
-            #z = np.vstack((z, np.zeros((n - m, 1))))
-
-            self.w = apply_householders_vector(h_vectors, z[:m], reverse=True)
         
-        if save_state:
-            self.R = R
-            self.h_vectors = h_vectors
-            self.X = X
+        self.__solve_lstsq(X, y, save_state)
 
     def predict(self, D:np.ndarray):
         '''
@@ -135,3 +119,39 @@ class ELM:
             return np.random.normal(init_params[0], init_params[1], (rows, cols))
         else:
             raise ValueError('Invalid initialization method')
+        
+    def __solve_lstsq(self, X:np.ndarray, y:np.ndarray, save_state:bool=False):
+        '''
+        Solve the least squares problem using QR factorization
+
+        Parameters:
+        -----------
+        X: np.ndarray
+            Matrix to be factorized
+        y: np.ndarray
+            Labels
+        
+        Returns:
+        --------
+        np.ndarray
+            Output weights
+        '''
+
+        m, n = X.shape
+
+        if m >= n: # X tall and thin
+            h_vectors, R = thin_QR(X)
+            b = apply_householders_vector(h_vectors, y, reverse=False)
+
+            self.w = np.squeeze(backward_substitution(R, b[:n]))
+        else: # X short and wide
+            h_vectors, R = thin_QR(X.T)
+            z = forwad_substitution(R.T, y)
+            #z = np.vstack((z, np.zeros((n - m, 1))))
+
+            self.w = apply_householders_vector(h_vectors, z[:m], reverse=True)
+        
+        if save_state:
+            self.R = R
+            self.h_vectors = h_vectors
+            self.X = X
