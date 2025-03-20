@@ -181,15 +181,16 @@ class ELM:
 
         if m >= n: # X tall and thin
             h_vectors, R = thin_QR(X)
-            b = apply_householders_vector(h_vectors, y, reverse=True)
+            b = apply_householders_vector(h_vectors, y, reverse=False)
 
             self.w = np.squeeze(backward_substitution(R, b[:n]))
         else: # X short and wide
             h_vectors, R = thin_QR(X.T)
             z = forwad_substitution(R.T, y)
             z = np.vstack((z, np.zeros((n - m, 1))))
+            print(z.shape)
 
-            self.w = np.squeeze(apply_householders_vector(h_vectors, z, reverse=False))
+            self.w = np.squeeze(apply_householders_vector(h_vectors, z, reverse=True))
         
         if save_state:
             self.R = R

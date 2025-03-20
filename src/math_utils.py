@@ -106,7 +106,7 @@ def apply_householders_vector(householder_vectors:list, b:np.ndarray, reverse:bo
 
     return y
 
-def forwad_substitution(A:np.ndarray, b:np.ndarray, threshold:np.float64) -> np.ndarray:
+def forwad_substitution(A:np.ndarray, b:np.ndarray, threshold:np.float64=None) -> np.ndarray:
     '''
     Forward substitution for solving a lower triangular system of equations Ax=b
 
@@ -139,7 +139,7 @@ def forwad_substitution(A:np.ndarray, b:np.ndarray, threshold:np.float64) -> np.
 
     return w
 
-def backward_substitution(A:np.ndarray, b:np.ndarray, threshold:np.float64) -> np.ndarray:
+def backward_substitution(A:np.ndarray, b:np.ndarray, threshold:np.float64=None) -> np.ndarray:
     '''
     Backward substitution for solving an upper triangular system of equations Ax=b
 
