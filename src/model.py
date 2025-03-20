@@ -33,7 +33,12 @@ class ELM:
         self.hidden_weights = self.__init_weights(init_method, init_params, hidden_size, input_size) # hidden layer weights
         self.w = None # output weights
 
-    def fit(self, D, y):
+        # used for incremental QR factorization
+        self.R = None
+        self.h_vectors = None
+        self.X = None
+
+    def fit(self, D:np.ndarray, y:np.ndarray, save_state:bool=False):
         '''
         Train the model
 
@@ -63,8 +68,13 @@ class ELM:
             #z = np.vstack((z, np.zeros((n - m, 1))))
 
             self.w = apply_householders_vector(h_vectors, z[:m], reverse=True)
+        
+        if save_state:
+            self.R = R
+            self.h_vectors = h_vectors
+            self.X = X
 
-    def predict(self, D):
+    def predict(self, D:np.ndarray):
         '''
         Predict output for given input
 
