@@ -1,6 +1,6 @@
 import numpy as np
 
-def thin_QR(X:np.ndarray) -> tuple:
+def thin_QR(X:np.ndarray, threshold:np.float64=None) -> tuple:
     '''
     Thin QR decomposition of matrix X
 
@@ -19,8 +19,10 @@ def thin_QR(X:np.ndarray) -> tuple:
     R = X.copy() # avoid to modify the original matrix
     householder_vectors = []
 
-    #TODO: add threshold for numerical stability
     #TODO: test right 
+
+    if threshold is None:
+        threshold = np.finfo(np.float64).eps * np.max(np.abs(X))
     
     for j in range(n):
         # Select column below diagonal
@@ -30,7 +32,12 @@ def thin_QR(X:np.ndarray) -> tuple:
         norm_x = np.linalg.norm(x)
         u = x.copy()
         u[0] += np.sign(x[0]) * norm_x
-        u /= np.linalg.norm(u)
+
+        # Check threshold
+        if np.max(np.abs(u)) > threshold:
+            u /= np.linalg.norm(u)
+        else:
+            u = np.zeros(u.shape)
         
         # Apply Householder transformation
         R[j:, :] -= 2 * np.outer(u, u.T @ R[j:, :])
@@ -99,7 +106,7 @@ def apply_householders_vector(householder_vectors:list, b:np.ndarray, reverse:bo
 
     return y
 
-def forwad_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
+def forwad_substitution(A:np.ndarray, b:np.ndarray, threshold:np.float64) -> np.ndarray:
     '''
     Forward substitution for solving a lower triangular system of equations Ax=b
 
@@ -118,15 +125,21 @@ def forwad_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
 
     w = np.zeros(b.shape)
 
+    if threshold is None:
+        threshold = np.finfo(np.float64).eps * np.max(np.abs(A))
+
     for i in range(len(b)):
-        if A[i,i] == 0: #TODO: come risolvere?
-            raise ValueError("The diagonal element is zero")
+        # Checl threshold for stability
+        if np.abs(A[i,i]) < threshold:
+            divider = threshold
+        else:
+            divider = A[i,i]
         
-        w[i] = (b[i] - np.dot(A[i, :i], w[:i])) / A[i, i] #TODO: controlla stabilità numerica (se A[i,i] è vicino a 0 trova soluzione)
+        w[i] = (b[i] - np.dot(A[i, :i], w[:i])) / divider # use "divider" for stability
 
     return w
 
-def backward_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
+def backward_substitution(A:np.ndarray, b:np.ndarray, threshold:np.float64) -> np.ndarray:
     '''
     Backward substitution for solving an upper triangular system of equations Ax=b
 
@@ -145,15 +158,21 @@ def backward_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
     
     w = np.zeros(b.shape)
 
+    if threshold is None:
+        threshold = np.finfo(np.float64).eps * np.max(np.abs(A))
+
     for i in range(len(b)-1, -1, -1):
-        if A[i,i] == 0: #TODO: come risolvere?
-            raise ValueError("The diagonal element is zero")
+        # Checl threshold for stability
+        if np.abs(A[i,i]) < threshold:
+            divider = threshold
+        else:
+            divider = A[i,i]
         
-        w[i] = (b[i] - np.dot(A[i, i+1:], w[i+1:])) / A[i, i] #TODO: controlla stabilità numerica (se A[i,i] è vicino a 0 trova soluzione)
+        w[i] = (b[i] - np.dot(A[i, i+1:], w[i+1:])) / divider # use "divider" for stability
     
     return w
 
-def incr_QR(x_new:np.ndarray, householder_vectors:list, R:np.ndarray) -> tuple:
+def incr_QR(x_new:np.ndarray, householder_vectors:list, R:np.ndarray, threshold:np.float64=None) -> tuple:
     '''
     Incremental QR decomposition of matrix X
 
@@ -177,11 +196,18 @@ def incr_QR(x_new:np.ndarray, householder_vectors:list, R:np.ndarray) -> tuple:
     z = apply_householders_vector(householder_vectors, x_new, reverse=False)
     z0, z1 = z[:n], z[n:]
 
+    if threshold is None:
+        threshold = np.finfo(np.float64).eps * np.max(np.abs(R))
+
     # Compute the new Householder vector
     norm_z1 = np.linalg.norm(z1) 
     u_new = z1.copy()
     u_new[0] += np.sign(z1[0]) * norm_z1
-    u_new /= np.linalg.norm(u_new) #TODO: controlla stabilità numerica (se A[i,i] è vicino a 0 trova soluzione)
+
+    if np.max(np.abs(u_new)) > threshold:
+        u_new /= np.linalg.norm(u_new)
+    else:
+        u_new = np.zeros(u_new.shape)
     
     z1 -= 2*np.outer(u_new, u_new.T @ z1)
 
