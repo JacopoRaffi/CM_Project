@@ -19,6 +19,16 @@ class ELM:
         Hidden layer weights
     w: np.ndarray
         Output weights
+    init_params: tuple
+        Parameters for initialization method
+    init_method: str
+        Initialization method for hidden layer weights
+    R: np.ndarray
+        R matrix for QR factorization
+    h_vectors: np.ndarray
+        Householder vectors for QR factorization
+    X: np.ndarray
+        Hidden layer output
     '''
     def __init__(self, input_size:int, hidden_size:int, output_size:int=1, 
                  init_method:str='uniform', init_params:tuple=(-1, 1), hidden_activation:callable=np.tanh):
@@ -73,6 +83,7 @@ class ELM:
             Predicted output
         '''
 
+        print(self.w.shape)
         if self.w is None:
             raise RuntimeError('model is not trained yet')
         
@@ -186,9 +197,9 @@ class ELM:
         else: # X short and wide
             h_vectors, R = thin_QR(X.T)
             z = forwad_substitution(R.T, y)
-            #z = np.vstack((z, np.zeros((n - m, 1))))
+            z = np.vstack((z, np.zeros((n - m, 1))))
 
-            self.w = apply_householders_vector(h_vectors, z[:m], reverse=True)
+            self.w = np.squeeze(apply_householders_vector(h_vectors, z, reverse=True))
         
         if save_state:
             self.R = R
