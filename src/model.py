@@ -73,6 +73,7 @@ class ELM:
             Predicted output
         '''
 
+        print(self.w.shape)
         if self.w is None:
             raise RuntimeError('model is not trained yet')
         
@@ -180,15 +181,15 @@ class ELM:
 
         if m >= n: # X tall and thin
             h_vectors, R = thin_QR(X)
-            b = apply_householders_vector(h_vectors, y, reverse=False)
+            b = apply_householders_vector(h_vectors, y, reverse=True)
 
             self.w = np.squeeze(backward_substitution(R, b[:n]))
         else: # X short and wide
             h_vectors, R = thin_QR(X.T)
             z = forwad_substitution(R.T, y)
-            #z = np.vstack((z, np.zeros((n - m, 1))))
+            z = np.vstack((z, np.zeros((n - m, 1))))
 
-            self.w = apply_householders_vector(h_vectors, z[:m], reverse=True)
+            self.w = np.squeeze(apply_householders_vector(h_vectors, z, reverse=False))
         
         if save_state:
             self.R = R
