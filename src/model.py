@@ -78,7 +78,7 @@ class ELM:
         
         return self.w @ self.activation(D @ self.hidden_weights.T).T
 
-    def add_neuron(self, new_input_feature:np.ndarray):
+    def add_neuron(self, new_input_feature:np.ndarray, y:np.ndarray=None, save_state:bool=False):
         '''
         Add a neuron to the hidden layer
 
@@ -86,6 +86,8 @@ class ELM:
         -----------
         new_input_feature: np.ndarray
             New input feature
+        y: np.ndarray
+            Labels. If None then the model will not be refitted. If not None, the model will be refitted
         
         Returns:
         --------
@@ -94,6 +96,21 @@ class ELM:
 
         # new random neuron
         neuron_weights = self.__init_weights(init_method=self.init_method, init_params=self.init_params, rows=1, cols=self.input_size)
+        self.hidden_weights = np.vstack((self.hidden_weights, neuron_weights))
+
+        # update X matrix
+        incremental_condition = (self.X is not None) and (self.R is not None) and (self.h_vectors is not None)
+
+        if not incremental_condition:
+            raise RuntimeError('Need to save the state of the model first. Set save_state=True in fit method')
+
+        x_new = self.activation(new_input_feature).T
+        self.X = np.hstack((self.X, x_new))
+
+        self.h_vectors, self.R = incr_QR(x_new, self.h_vectors, self.R)
+
+        if y is not None: # refit the model
+            self.__solve_lstsq(self.X, y, save_state)
 
 
     def __init_weights(self, init_method:str='uniform', init_params:tuple=(-1, 1), rows:int=None, cols:int=None):
