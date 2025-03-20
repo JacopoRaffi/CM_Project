@@ -20,7 +20,7 @@ def mae(y_true, y_pred):
 def mse(y_true, y_pred):
     '''
     Mean Squared Error (MSE) metric
-
+    
     Parameters:
     -----------
     y_true: np.ndarray
