@@ -5,7 +5,7 @@ class ELM:
     '''
     Extreme Learning Machine (ELM) model for regression (linear activation function for output layer)
 
-    Attributes:
+    Attributes
     -----------
     input_size: int
         Number of input neurons
@@ -42,14 +42,14 @@ class ELM:
         '''
         Train the model
 
-        Parameters:
+        Parameters
         -----------
         D: np.ndarray
             Input dataset
         y: np.ndarray
             labels
         
-        Returns:
+        Returns
         --------
         None
         '''
@@ -62,12 +62,12 @@ class ELM:
         '''
         Predict output for given input
 
-        Parameters:
+        Parameters
         -----------
         X: np.ndarray
             Input data
         
-        Returns:
+        Returns
         --------
         np.ndarray
             Predicted output
@@ -82,14 +82,14 @@ class ELM:
         '''
         Add a neuron to the hidden layer
 
-        Parameters:
+        Parameters
         -----------
         new_input_feature: np.ndarray
             New input feature
         y: np.ndarray
             Labels. If None then the model will not be refitted. If not None, the model will be refitted
         
-        Returns:
+        Returns
         --------
         None
         '''
@@ -117,11 +117,11 @@ class ELM:
         '''
         Clean the state of the model, i.e. set R, h_vectors and X to None so to avoid useless memory usage during inference
 
-        Parameters:
+        Parameters
         -----------
         None
         
-        Returns:
+        Returns
         --------
         None
         '''
@@ -131,19 +131,23 @@ class ELM:
         self.X = None
 
 
-    def __init_weights(self, init_method:str='uniform', init_params:tuple=(-1, 1), rows:int=None, cols:int=None):
+    def __init_weights(self, init_method: str = 'uniform', init_params: tuple = (-1, 1), rows: int = None, cols: int = None):
         '''
         Initialize weights for hidden layer
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         init_method: str
             Initialization method for hidden layer weights. At the moment, only 'uniform' and 'normal' are supported
         init_params: tuple
             Parameters for initialization method
-        
-        Returns:
-        --------
+        rows: int
+            Number of rows for the weight matrix (default is None)
+        cols: int
+            Number of columns for the weight matrix (default is None)
+
+        Returns
+        -------
         np.ndarray
             Hidden layer weights
         '''
@@ -159,14 +163,14 @@ class ELM:
         '''
         Solve the least squares problem using QR factorization
 
-        Parameters:
+        Parameters
         -----------
         X: np.ndarray
             Matrix to be factorized
         y: np.ndarray
             Labels
         
-        Returns:
+        Returns
         --------
         np.ndarray
             Output weights

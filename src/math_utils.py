@@ -4,12 +4,12 @@ def thin_QR(X:np.ndarray) -> tuple:
     '''
     Thin QR decomposition of matrix X
 
-    Parameters:
+    Parameters
     -----------
     X: np.ndarray
         Input matrix
 
-    Returns:
+    Returns
     --------
     tuple
         Householder vectors and R matrix (only the upper triangular part)
@@ -46,14 +46,14 @@ def apply_householders_matrix(householder_vectors:list, A:np.ndarray) -> np.ndar
     '''
     Perform the product Q*A using Householder vectors instead of the full Q matrix
 
-    Parameters:
+    Parameters
     -----------
     householder_vectors: np.ndarray
         Householder vectors
     A: np.ndarray
         Matrix to be transformed
 
-    Returns:
+    Returns
     --------
     np.ndarray
         Transformed matrix
@@ -72,7 +72,7 @@ def apply_householders_vector(householder_vectors:list, b:np.ndarray, reverse:bo
     '''
     Perform the product Q*b using Householder vectors instead of the full Q matrix
 
-    Parameters:
+    Parameters
     -----------
     householder_vectors: np.ndarray
         Householder vectors
@@ -82,7 +82,7 @@ def apply_householders_vector(householder_vectors:list, b:np.ndarray, reverse:bo
         If True, apply the transformation in reverse order (represent Q)
         if False, apply the transformation in forward order (represent Q^T)
 
-    Returns:
+    Returns
     --------
     np.ndarray
         Transformed vector
@@ -103,14 +103,14 @@ def forwad_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
     '''
     Forward substitution for solving a lower triangular system of equations Ax=b
 
-    Parameters:
+    Parameters
     -----------
     A: np.ndarray
         Lower triangular matrix
     b: np.ndarray
         Right-hand side vector
     
-    Returns:
+    Returns
     --------
     np.ndarray
         Solution vector
@@ -130,14 +130,14 @@ def backward_substitution(A:np.ndarray, b:np.ndarray) -> np.ndarray:
     '''
     Backward substitution for solving an upper triangular system of equations Ax=b
 
-    Parameters:
+    Parameters
     -----------
     A: np.ndarray
         Upper triangular matrix
     b: np.ndarray
         Right-hand side vector
     
-    Returns:
+    Returns
     --------
     np.ndarray
         Solution vector
@@ -157,7 +157,7 @@ def incr_QR(x_new:np.ndarray, householder_vectors:list, R:np.ndarray) -> tuple:
     '''
     Incremental QR decomposition of matrix X
 
-    Parameters:
+    Parameters
     -----------
     x_new: np.ndarray
         The new feature colunmn added to the original matrix
@@ -166,7 +166,7 @@ def incr_QR(x_new:np.ndarray, householder_vectors:list, R:np.ndarray) -> tuple:
     R_0: np.ndarray
         R matrix from the previous QR factorization of X
 
-    Returns:
+    Returns
     --------
     tuple
         The updated list of Householder vectors and the new R matrix (only the upper triangular part)
