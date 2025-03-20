@@ -188,7 +188,6 @@ class ELM:
             h_vectors, R = thin_QR(X.T)
             z = forwad_substitution(R.T, y)
             z = np.vstack((z, np.zeros((n - m, 1))))
-            print(z.shape)
 
             self.w = np.squeeze(apply_householders_vector(h_vectors, z, reverse=True))
         
