@@ -56,7 +56,40 @@ def residual_QR(X):
     h, R = thin_QR(X)
     R = np.vstack((R, np.zeros((m-n, n))))
 
-    return np.linalg.norm(X - apply_householders_matrix(h, R)) / np.linalg.norm(X) #TODO: controllare se bisogna dividere per la norma di X
+    return np.linalg.norm(X - apply_householders_matrix(h, R)) / np.linalg.norm(X)
+
+def plot_errorbar(START=1000, END=5001, STEP=1000, mean_and_variance=None):
+    '''
+    Plot the mean and variance of the time
+
+    Parameters
+    -----------
+    START: int
+        Starting value of m
+    END: int
+        Ending value of m
+    STEP: int
+        Step of m
+    mean_and_variance: iterable
+        List of tuple (mean, variance) for each value of m
+    '''
+
+    m_values = np.array(range(START, END, STEP))
+    means = np.array([x[0] for x in mean_and_variance])
+    variances = np.array([x[1] for x in mean_and_variance])
+
+    a, b = np.polyfit(m_values, means, 1)
+    fit_line = a * m_values + b  # compute y values for the fit line
+
+    plt.errorbar(range(START, END, STEP), means, yerr=variances, fmt='o')
+    plt.plot(m_values, fit_line, linestyle='--', color='orange')
+    plt.xlabel('m')
+    plt.ylabel('Time (s)')
+    plt.show()
+
+
+
+
 
 def plot_time_mean_variance(n=256, trials=5, START=1000, END=5001, STEP=1000):
     '''
@@ -97,7 +130,7 @@ def plot_time_mean_variance(n=256, trials=5, START=1000, END=5001, STEP=1000):
         # compute the mean and variance of the data
         mean_and_variance.append((np.mean(times_trials), np.var(times_trials)))
 
-    m_values = np.array(range(START, END, STEP))
+    m_values = np.array(range(START, END, STEP)) # TODO: plot code to be moved in a separate function
     means = np.array([x[0] for x in mean_and_variance])
     variances = np.array([x[1] for x in mean_and_variance])
 
@@ -109,3 +142,5 @@ def plot_time_mean_variance(n=256, trials=5, START=1000, END=5001, STEP=1000):
     plt.xlabel('m')
     plt.ylabel('Time (s)')
     plt.show()
+
+

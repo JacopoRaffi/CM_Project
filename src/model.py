@@ -180,6 +180,8 @@ class ELM:
             Matrix to be factorized
         y: np.ndarray
             Labels
+        save_state: bool
+            Save the state of the model (R, h_vectors, X)
         
         Returns
         --------
@@ -192,13 +194,13 @@ class ELM:
         if m >= n: # X tall and thin
             h_vectors, R = thin_QR(X)
             b = apply_householders_vector(h_vectors, y, reverse=False)
-
+            
             self.w = np.squeeze(backward_substitution(R, b[:n]))
         else: # X short and wide
             h_vectors, R = thin_QR(X.T)
             z = forwad_substitution(R.T, y)
             z = np.vstack((z, np.zeros((n - m, 1))))
-
+            
             self.w = np.squeeze(apply_householders_vector(h_vectors, z, reverse=True))
         
         if save_state:
