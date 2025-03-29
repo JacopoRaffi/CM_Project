@@ -58,20 +58,46 @@ def residual_QR(X):
 
     return np.linalg.norm(X - apply_householders_matrix(h, R)) / np.linalg.norm(X)
 
-def plot_errorbar(START=1000, END=5001, STEP=1000, mean_and_variance=None):
+def residual_QR_incr(X, new_column):
+    '''
+    Compute the residual of the incremental QR factorization of a matrix X plus a new column
+
+    Parameters
+    -----------
+    X: np.ndarray
+        Input matrix
+    new_column: np.ndarray
+        New column to be added to the matrix
+
+    Returns:
+    --------
+    float
+    '''
+    m, n = X.shape
+    h, R = thin_QR(X)
+    h, R = incr_QR(new_column, h, R)
+    R = np.vstack((R, np.zeros((m-(n+1), n+1))))
+    X = np.hstack((X, new_column))
+
+    return np.linalg.norm(X - apply_householders_matrix(h, R)) / np.linalg.norm(X)
+
+
+def plot_errorbar(START=1000, END=5001, STEP=1000, mean_and_variance=None, xlabel='m'):
     '''
     Plot the mean and variance of the time
 
     Parameters
     -----------
     START: int
-        Starting value of m
+        Starting value of m or n
     END: int
-        Ending value of m
+        Ending value of m or n
     STEP: int
-        Step of m
+        Step of m or n
     mean_and_variance: iterable
-        List of tuple (mean, variance) for each value of m
+        List of tuple (mean, variance) for each value of m or n
+    xlabel: str
+        Label for the x-axis
     '''
 
     m_values = np.array(range(START, END, STEP))
@@ -83,12 +109,9 @@ def plot_errorbar(START=1000, END=5001, STEP=1000, mean_and_variance=None):
 
     plt.errorbar(range(START, END, STEP), means, yerr=variances, fmt='o')
     plt.plot(m_values, fit_line, linestyle='--', color='orange')
-    plt.xlabel('m')
+    plt.xlabel(xlabel)
     plt.ylabel('Time (s)')
     plt.show()
-
-
-
 
 
 def plot_time_mean_variance(n=256, trials=5, START=1000, END=5001, STEP=1000):
@@ -130,18 +153,7 @@ def plot_time_mean_variance(n=256, trials=5, START=1000, END=5001, STEP=1000):
         # compute the mean and variance of the data
         mean_and_variance.append((np.mean(times_trials), np.var(times_trials)))
 
-    m_values = np.array(range(START, END, STEP)) # TODO: plot code to be moved in a separate function
-    means = np.array([x[0] for x in mean_and_variance])
-    variances = np.array([x[1] for x in mean_and_variance])
-
-    a, b = np.polyfit(m_values, means, 1)
-    fit_line = a * m_values + b  # compute y values for the fit line
-
-    plt.errorbar(range(START, END, STEP), means, yerr=variances, fmt='o')
-    plt.plot(m_values, fit_line, linestyle='--', color='orange')
-    plt.xlabel('m')
-    plt.ylabel('Time (s)')
-    plt.show()
+    plot_errorbar(START, END, STEP, mean_and_variance, xlabel='m')
 
 def plot_time_mean_variance_incr_n(n=256, trials=5, START=1000, END=5001, STEP=1000):
     '''
@@ -184,18 +196,7 @@ def plot_time_mean_variance_incr_n(n=256, trials=5, START=1000, END=5001, STEP=1
         # compute the mean and variance of the data
         mean_and_variance.append((np.mean(times_trials), np.var(times_trials)))
 
-    m_values = np.array(range(START, END, STEP)) # TODO: plot code to be moved in a separate function
-    means = np.array([x[0] for x in mean_and_variance])
-    variances = np.array([x[1] for x in mean_and_variance])
-
-    a, b = np.polyfit(m_values, means, 1)
-    fit_line = a * m_values + b  # compute y values for the fit line
-
-    plt.errorbar(range(START, END, STEP), means, yerr=variances, fmt='o')
-    plt.plot(m_values, fit_line, linestyle='--', color='orange')
-    plt.xlabel('m')
-    plt.ylabel('Time (s)')
-    plt.show()
+    plot_errorbar(START, END, STEP, mean_and_variance, xlabel='m')
 
 def plot_time_mean_variance_incr_m(m=1000, trials=5, START=500, END=501, STEP=500):
     '''
@@ -238,15 +239,4 @@ def plot_time_mean_variance_incr_m(m=1000, trials=5, START=500, END=501, STEP=50
         # compute the mean and variance of the data
         mean_and_variance.append((np.mean(times_trials), np.var(times_trials)))
 
-    m_values = np.array(range(START, END, STEP)) # TODO: plot code to be moved in a separate function
-    means = np.array([x[0] for x in mean_and_variance])
-    variances = np.array([x[1] for x in mean_and_variance])
-
-    a, b = np.polyfit(m_values, means, 1)
-    fit_line = a * m_values + b  # compute y values for the fit line
-
-    plt.errorbar(range(START, END, STEP), means, yerr=variances, fmt='o')
-    plt.plot(m_values, fit_line, linestyle='--', color='orange')
-    plt.xlabel('n')
-    plt.ylabel('Time (s)')
-    plt.show()
+    plot_errorbar(START, END, STEP, mean_and_variance, xlabel='n')
