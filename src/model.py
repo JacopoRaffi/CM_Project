@@ -65,7 +65,7 @@ class ELM:
         '''
         
         X = self.activation(D @ self.hidden_weights.T) # hidden layer output 
-        
+
         self.__solve_lstsq(X, y, save_state)
 
     def predict(self, D:np.ndarray):
@@ -83,7 +83,6 @@ class ELM:
             Predicted output
         '''
 
-        print(self.w.shape)
         if self.w is None:
             raise RuntimeError('model is not trained yet')
         
