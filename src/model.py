@@ -48,7 +48,7 @@ class ELM:
         self.h_vectors = None
         self.X = None
 
-    def fit(self, D:np.ndarray, y:np.ndarray, save_state:bool=False):
+    def fit(self, D:np.ndarray, y:np.ndarray, alfa_tikhonov:float, save_state:bool=False):
         '''
         Train the model
 
@@ -65,6 +65,9 @@ class ELM:
         '''
         
         X = self.activation(D @ self.hidden_weights.T) # hidden layer output 
+        _, n = X.shape
+        # vtsack under X an identity matrix  
+        X = np.vstack((X, alfa_tikhonov * np.eye(n)))
 
         self.__solve_lstsq(X, y, save_state)
 

@@ -15,7 +15,7 @@ def thin_QR(X:np.ndarray, threshold:np.float64=None) -> tuple:
         Householder vectors and R matrix (only the upper triangular part)
     '''
     
-    m, n = X.shape
+    _, n = X.shape
     R = X.copy() # avoid to modify the original matrix
     householder_vectors = []
 
@@ -128,11 +128,10 @@ def forwad_substitution(A:np.ndarray, b:np.ndarray, threshold:np.float64=None) -
     for i in range(len(b)):
         # Checl threshold for stability
         if np.abs(A[i,i]) < threshold:
-            divider = threshold
-        else:
-            divider = A[i,i]
+            raise ValueError('Matrix is singular or near singular')
+            
         
-        w[i] = (b[i] - np.dot(A[i, :i], w[:i])) / divider # use "divider" for stability
+        w[i] = (b[i] - np.dot(A[i, :i], w[:i])) / A[i,i] # use "divider" for stability
 
     return w
 
@@ -161,11 +160,9 @@ def backward_substitution(A:np.ndarray, b:np.ndarray, threshold:np.float64=None)
     for i in range(len(b)-1, -1, -1):
         # Checl threshold for stability
         if np.abs(A[i,i]) < threshold:
-            divider = threshold
-        else:
-            divider = A[i,i]
+            raise ValueError('Matrix is singular or near singular')
         
-        w[i] = (b[i] - np.dot(A[i, i+1:], w[i+1:])) / divider # use "divider" for stability
+        w[i] = (b[i] - np.dot(A[i, i+1:], w[i+1:])) / A[i,i] # use "divider" for stability
     
     return w
 
