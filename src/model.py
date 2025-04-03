@@ -67,7 +67,9 @@ class ELM:
         X = self.activation(D @ self.hidden_weights.T) # hidden layer output 
         _, n = X.shape
         # vtsack under X an identity matrix  
-        X = np.vstack((X, alfa_tikhonov * np.eye(n)))
+        if alfa_tikhonov != 0:
+            X = np.vstack((X, alfa_tikhonov * np.eye(n)))
+            y = np.vstack((y, np.zeros((n, 1))))
 
         self.__solve_lstsq(X, y, save_state)
 
