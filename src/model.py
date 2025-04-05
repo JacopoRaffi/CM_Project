@@ -48,7 +48,7 @@ class ELM:
         self.h_vectors = None
         self.X = None
 
-    def fit(self, D:np.ndarray, y:np.ndarray, alfa_tikhonov:float, save_state:bool=False):
+    def fit(self, D:np.ndarray, y:np.ndarray, alfa_tikhonov:float=0., save_state:bool=False):
         '''
         Train the model
 
@@ -91,7 +91,9 @@ class ELM:
         if self.w is None:
             raise RuntimeError('model is not trained yet')
         
-        return self.w @ self.activation(D @ self.hidden_weights.T).T
+        result = self.w @ self.activation(D @ self.hidden_weights.T).T
+        
+        return (result.reshape(-1, 1) if self.output_size == 1 else result)
 
     def add_neuron(self, new_input_feature:np.ndarray, y:np.ndarray=None):
         '''
