@@ -111,6 +111,7 @@ def plot_errorbar(START=1000, END=5001, STEP=1000, mean_and_variance=None, xlabe
     plt.plot(m_values, fit_line, linestyle='--', color='orange')
     plt.xlabel(xlabel)
     plt.ylabel('Time (s)')
+    plt.xticks(range(START, END, STEP))
     plt.show()
 
 
