@@ -69,17 +69,24 @@ def residual_QR_incr(X, new_column):
     new_column: np.ndarray
         New column to be added to the matrix
 
-    Returns:
+    Returns
     --------
-    float
+    Tuple[float, float]
+        Residual of the incremental QR factorization and the residual of the QR factorization from zero
     '''
     m, n = X.shape
     h, R = thin_QR(X)
     h, R = incr_QR(new_column, h, R)
     R = np.vstack((R, np.zeros((m-(n+1), n+1))))
     X = np.hstack((X, new_column))
+    incr_qr_residual = np.linalg.norm(X - apply_householders_matrix(h, R)) / np.linalg.norm(X)
 
-    return np.linalg.norm(X - apply_householders_matrix(h, R)) / np.linalg.norm(X)
+    # compute the QR from zero on the new matrix and compute the residual
+    h, R = thin_QR(X)
+    R = np.vstack((R, np.zeros((m-(n+1), n+1))))
+    qr_residual = np.linalg.norm(X - apply_householders_matrix(h, R)) / np.linalg.norm(X)
+
+    return incr_qr_residual, qr_residual
 
 
 def plot_errorbar(START=1000, END=5001, STEP=1000, mean_and_variance=None, xlabel='m'):
